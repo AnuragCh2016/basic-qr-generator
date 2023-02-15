@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>QR Code Generator</title>
+</head>
+<body>
+  <form id="form">
+    <label for="input">Input:</label>
+    <input type="text" name="input" id="input">
+    <button type="submit">Generate QR code</button>
+  </form>
+
+  <div id="qrcode"></div>
+
+  <script>
+    const form = document.getElementById('form');
+    const qrcodeDiv = document.getElementById('qrcode');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      // Get the input from the form
+      const input = form.elements.input.value;
+
+      // Send a POST request to the /generateQRCode endpoint
+      const response = await fetch('/generateQRCode', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ input })
+      });
+
+      if (response.ok) {
+        // Get the data URI from the response
+        const dataUri = await response.text();
+
+        // Set the data URI as the source of the img element
+        const img = document.createElement('img');
+        img.src = dataUri;
+        qrcodeDiv.appendChild(img);
+      } else {
+        console.error('Error generating QR code:', response.statusText);
+      }
+    });
+  </script>
+</body>
+</html>
